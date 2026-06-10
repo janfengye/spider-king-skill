@@ -1,13 +1,15 @@
 # Spider King
-<img width="591" height="250" alt="image" src="https://github.com/user-attachments/assets/cfbb487e-8def-4a6c-b8da-0d1bd0e83771" />
+<img width="1024" height="572" alt="0" src="https://github.com/user-attachments/assets/a621e863-09c6-418f-a320-d453f3330f7a" />
 
 `Spider King` 是一套面向 Web 协议恢复与参数还原场景的逆向工程 Skill。
 
 它的目标不是“把网页点通”，也不是“用浏览器把请求糊过去”，而是把看起来依赖浏览器环境的目标，拆回到可复现、可验证、可长期维护的纯协议采集链路中。
 
+这套 Skill 默认面向自有系统、已授权平台、合法安全测试与教学研究场景，强调以下交付原则：
+
 - 先证据，后结论
-- 必须协议
-- 先还原动态状态，再谈分页、规模化
+- 必须纯协议
+- 先还原动态状态，再谈分页、并发和规模化
 - 最终交付必须脱离浏览器运行
 
 ## 核心定位
