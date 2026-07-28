@@ -29,17 +29,28 @@ Variant:
 4. an extra in-memory timestamp such as `$_zw[23]` must also be updated
 5. replay succeeds only after both pieces are refreshed
 
+Variant:
+
+1. the first request to a document route returns non-final HTML such as `412`
+2. that HTML carries inline bootstrap state plus one or more linked challenge scripts
+3. the first response also seeds one or more cookies, but those are only bootstrap inputs
+4. local execution of the challenge yields the replayable cookie or full outbound `Cookie` header
+5. replaying the same document URL from Python returns the real HTML page
+
 ## 2. What to capture
 
 Record all of these:
 
 1. first request URL, method, query, headers, and cookies
 2. first response status code
-3. first response body shape
-4. exact cookie or token written after executing the returned JS
-5. second request differences
-6. whether later pages change headers such as `User-Agent`
-7. whether the page also keeps a parallel in-memory value that must be refreshed
+3. first response body shape, including inline bootstrap state and linked challenge assets when present
+4. seed cookie state from the first response before local execution
+5. exact cookie or token written after executing the returned JS
+6. exact outbound `Cookie` header on the replay request when egress evidence is available
+7. second request differences
+8. whether later pages change headers such as `User-Agent`
+9. whether the page also keeps a parallel in-memory value that must be refreshed
+10. semantic anchors that prove the replayed page is real business content, not just a shell
 
 ## 3. Fastest stable strategy
 
@@ -52,6 +63,15 @@ Prefer the smallest working path:
 5. replay the same request with the new state
 
 This usually beats fully deobfuscating the payload before delivery.
+
+If the first response is a challenged document page rather than JSON:
+
+1. request the document URL once
+2. if the response is non-final HTML such as `412`, freeze the inline bootstrap state, linked challenge JS, and seed cookies on that same session chain
+3. execute the challenge locally in a minimal sandbox
+4. extract the final replayable cookie or full outbound `Cookie` header, not just one cookie name
+5. replay the same document URL from Python
+6. verify semantic anchors in the returned HTML before scaling pagination
 
 If the bootstrap logic already lives on the page:
 
@@ -80,6 +100,7 @@ Most bootstrap payloads only need a small subset of browser APIs:
 - `setTimeout` / `setInterval`
 - `atob` / `btoa`
 - `encodeURIComponent` / `decodeURIComponent`
+- enough parser and script-order fidelity to run inline bootstrap state before the linked challenge script when that order matters
 
 Start with the minimum. Add more only when runtime errors prove they are needed.
 
@@ -118,8 +139,9 @@ The main collector should:
 
 Call it done only after:
 
-1. the helper consistently extracts the cookie or token
-2. the replay returns real data, not another challenge payload
-3. all pages succeed
-4. any page-specific header rules are documented
-5. the final script prints the total result directly
+1. the helper consistently extracts the cookie, token, or full replayable `Cookie` header
+2. the replay returns real data, not another challenge payload or shell page
+3. semantic anchors such as expected DOM blocks or pagination markers prove the replayed page is the real target content
+4. all requested pages succeed
+5. any page-specific header rules or explicit user-provided timing limits are documented
+6. the final script prints or saves the requested output directly

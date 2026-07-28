@@ -6,6 +6,12 @@ Use this reference when you need to decide whether the current path is a real co
 
 If the final handoff still depends on live page context, it is not done.
 
+Explicit config inputs are acceptable.
+Live page reads are not.
+
+If browser-shaped values such as UA, platform, viewport, or screen metrics only survive as signer inputs, they may remain as declared config or sample-derived parameters in the final collector.
+That does not justify keeping a browser, embedded runtime, or page-context call alive just to reread them on every run.
+
 ## Acceptable delivery shapes
 
 - pure Python HTTP collector
@@ -21,6 +27,8 @@ If the final handoff still depends on live page context, it is not done.
 - manual cookie export as an operating requirement
 - "works only with my browser profile" handoff
 - hidden verifier clicks instead of protocol replay
+- importing runtime-backed predecessor modules whose import side effects still patch globals, read cookies, or depend on browser or host state
+- live browser or host-runtime reads whose only purpose is to refill payload fields already understood as explicit inputs
 
 ## Gate checklist
 
@@ -31,6 +39,9 @@ If the final handoff still depends on live page context, it is not done.
 5. decode or parser path is local when applicable
 6. required session state is explicit
 7. no browser dependency remains in the final run path
+8. host-like signer inputs are explicit config when they are only consumed as values
+9. deterministic proof mode and live-generation mode are separated when randomness, timestamp jitter, or filler noise matter
+10. final helper code is self-contained and free of runtime-backed import side effects
 
 ## Escalation rule
 

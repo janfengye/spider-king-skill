@@ -15,6 +15,8 @@ Complete these three checks first:
    - report blockers early instead of pretending the missing tool does not matter
 2. family triage
    - choose the first family that explains the failure mode best
+   - before loading a family-specific scaffold or playbook, corroborate the family across at least two evidence surfaces such as response shape, cookie behavior, runtime markers, script traits, or wire behavior
+   - if only one weak hint exists, keep the classification provisional and continue evidence gathering
    - if the family changes after new evidence, restate it explicitly
 3. delivery intent
    - state the smallest acceptable final shape
@@ -27,6 +29,8 @@ Use the smallest faithful layer that explains the evidence:
 1. simple decode or standard algorithm: handwrite in Python first
 2. host-bound JavaScript without true interaction: route to `references/embedded-browser-runtime-playbook.md`
 3. full interaction or rendering dependence: observe in browser, but keep the delivery gate strict and do not confuse observation with the final collector
+
+For the full rung-by-rung rule, proof requirements, and "do not jump layers" contract, read `references/escalation-ladder-playbook.md`.
 
 ## Family triage
 

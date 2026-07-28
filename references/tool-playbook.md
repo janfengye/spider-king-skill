@@ -70,7 +70,9 @@ Start with a clean baseline. Then use initiator stacks and request diffs. Add ru
 4. use `trace_function` when a named helper is stable enough to trace without poisoning the target
 5. use `break_on_xhr` when you need to stop at the exact request boundary
 6. use `inject_before_load` only for narrow boundary hooks that you can justify
-7. if the target is verifier-gated or behavior-sensitive, remove invasive instrumentation and recapture a clean baseline the moment behavior changes
+7. when hooking, log target, event, method, URL, field, or caller so captured values stay attributable to one request boundary
+8. if a hook stays quiet, treat that as evidence only about that exact boundary and rule out sibling writers or alternate transport channels before concluding the field is absent
+9. if the target is verifier-gated or behavior-sensitive, remove invasive instrumentation and recapture a clean baseline the moment behavior changes
 
 ### Breakpoint tools
 
@@ -84,6 +86,7 @@ Start with a clean baseline. Then use initiator stacks and request diffs. Add ru
 
 - `evaluate_script`: inspect `document.cookie`, storage values, bootstrap globals, or runtime helper outputs
 - `evaluate_script(mainWorld=true)`: inspect page-owned globals such as webpack caches, SDK objects, or exposed bootstrap helpers
+- if a console or isolated-world probe misses a page-owned wrapper, constructor, or global, repeat the proof in the page-owned world before discarding that path
 - `inject_before_load`: patch or observe a narrow environment branch before the page script runs
 - `save_script_source`: preserve suspicious bundles for offline diffing when environment mismatch remains unclear
 
@@ -92,6 +95,7 @@ Start with a clean baseline. Then use initiator stacks and request diffs. Add ru
 - If the target needs `navigator`, `screen`, `location`, DOM lifecycle, timers, `document.cookie`, or XHR wrapper semantics without true interaction, route to `references/embedded-browser-runtime-playbook.md`.
 - If the runtime exposes a synchronous getter after init or self-issues the decisive XHR or fetch payload, route to `references/challenge-artifact-harvest-playbook.md` before brute-force DOM patching.
 - Use a local embedded runtime such as `iv8` to run offline page bootstrap, advance logical time, observe API probe chains, or inspect local net-log style mutations.
+- If `iv8` is the chosen runtime, then read `references/iv8-runtime-cheatsheet.md` for concrete recipes on `page.load` versus DOM insertion, logical time control, resource injection, `netLog`, and `wrapNative`.
 - Extract explicit artifacts back to Python: cookie string, final URL, wrapped body, token, or decoded payload.
 - Do not let the runtime own live HTTP or turn into a stealth browser dependency when a narrower local helper would do.
 

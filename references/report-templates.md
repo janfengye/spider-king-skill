@@ -93,6 +93,11 @@ Verification
 - Fixed-input self-checks:
 - No browser dependency:
 
+Minimal verifiable facts
+- 1.
+- 2.
+- 3.
+
 Known instability
 - 1.
 - 2.
